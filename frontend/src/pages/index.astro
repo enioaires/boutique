@@ -1,0 +1,18 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import HeroSearch from "../components/HeroSearch.svelte";
+import OpportunitiesCarousel from "../components/OpportunitiesCarousel.astro";
+import { directus, readItems } from "../lib/directus";
+
+const [tiposImoveis, localizacoes] = await Promise.all([
+  directus.request(readItems("tipos_imoveis", { sort: ["sort"] })),
+  directus.request(readItems("localizacoes", { sort: ["sort"] })),
+]);
+---
+
+<Layout>
+  <Header />
+  <HeroSearch client:load tiposImoveis={tiposImoveis} localizacoes={localizacoes} />
+  <OpportunitiesCarousel />
+</Layout>

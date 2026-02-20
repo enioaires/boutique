@@ -1,0 +1,297 @@
+{
+  "info": {
+    "name": "Imobiliária Boutique - Directus API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "url": "http://localhost:8055/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@imobiliaria.com\",\n  \"password\": \"admin\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "url": "http://localhost:8055/auth/refresh",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"<refresh_token>\",\n  \"mode\": \"json\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Imóveis",
+      "item": [
+        {
+          "name": "Listar todos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8055/items/imoveis?fields=*,tipo_imovel.*,localizacao.*&sort=-date_created",
+              "host": ["http://localhost:8055"],
+              "path": ["items", "imoveis"],
+              "query": [
+                { "key": "fields", "value": "*,tipo_imovel.*,localizacao.*" },
+                { "key": "sort", "value": "-date_created" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar destaques",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8055/items/imoveis?fields=*,tipo_imovel.*,localizacao.*&filter[destaque][_eq]=true&filter[status][_eq]=disponivel",
+              "host": ["http://localhost:8055"],
+              "path": ["items", "imoveis"],
+              "query": [
+                { "key": "fields", "value": "*,tipo_imovel.*,localizacao.*" },
+                { "key": "filter[destaque][_eq]", "value": "true" },
+                { "key": "filter[status][_eq]", "value": "disponivel" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Buscar por slug",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8055/items/imoveis?fields=*,tipo_imovel.*,localizacao.*,imagem_destaque.*&filter[slug][_eq]=apartamento-2q-buritis",
+              "host": ["http://localhost:8055"],
+              "path": ["items", "imoveis"],
+              "query": [
+                { "key": "fields", "value": "*,tipo_imovel.*,localizacao.*,imagem_destaque.*" },
+                { "key": "filter[slug][_eq]", "value": "apartamento-2q-buritis" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Buscar por ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8055/items/imoveis/1?fields=*,tipo_imovel.*,localizacao.*,imagem_destaque.*",
+              "host": ["http://localhost:8055"],
+              "path": ["items", "imoveis", "1"],
+              "query": [
+                { "key": "fields", "value": "*,tipo_imovel.*,localizacao.*,imagem_destaque.*" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filtrar por finalidade",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8055/items/imoveis?fields=*,tipo_imovel.*,localizacao.*&filter[finalidade][_eq]=compra",
+              "host": ["http://localhost:8055"],
+              "path": ["items", "imoveis"],
+              "query": [
+                { "key": "fields", "value": "*,tipo_imovel.*,localizacao.*" },
+                { "key": "filter[finalidade][_eq]", "value": "compra" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filtrar por tipo + localização",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8055/items/imoveis?fields=*,tipo_imovel.*,localizacao.*&filter[tipo_imovel][_eq]=1&filter[localizacao][_eq]=1",
+              "host": ["http://localhost:8055"],
+              "path": ["items", "imoveis"],
+              "query": [
+                { "key": "fields", "value": "*,tipo_imovel.*,localizacao.*" },
+                { "key": "filter[tipo_imovel][_eq]", "value": "1" },
+                { "key": "filter[localizacao][_eq]", "value": "1" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filtrar por faixa de preço",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8055/items/imoveis?fields=*,tipo_imovel.*,localizacao.*&filter[preco_venda][_gte]=300000&filter[preco_venda][_lte]=700000",
+              "host": ["http://localhost:8055"],
+              "path": ["items", "imoveis"],
+              "query": [
+                { "key": "fields", "value": "*,tipo_imovel.*,localizacao.*" },
+                { "key": "filter[preco_venda][_gte]", "value": "300000" },
+                { "key": "filter[preco_venda][_lte]", "value": "700000" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Criar imóvel",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:8055/items/imoveis",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Novo Imóvel Teste\",\n  \"slug\": \"novo-imovel-teste\",\n  \"finalidade\": \"compra\",\n  \"tipo_imovel\": 1,\n  \"localizacao\": 1,\n  \"status\": \"disponivel\",\n  \"destaque\": false,\n  \"quartos\": 2,\n  \"banheiros\": 1,\n  \"vagas\": 1,\n  \"area_total\": 60,\n  \"preco_venda\": 350000\n}"
+            }
+          }
+        },
+        {
+          "name": "Atualizar imóvel",
+          "request": {
+            "method": "PATCH",
+            "url": "http://localhost:8055/items/imoveis/1",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"preco_venda\": 395000,\n  \"destaque\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Deletar imóvel",
+          "request": {
+            "method": "DELETE",
+            "url": "http://localhost:8055/items/imoveis/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tipos de Imóveis",
+      "item": [
+        {
+          "name": "Listar todos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8055/items/tipos_imoveis?sort=sort",
+              "host": ["http://localhost:8055"],
+              "path": ["items", "tipos_imoveis"],
+              "query": [
+                { "key": "sort", "value": "sort" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filtrar por categoria",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8055/items/tipos_imoveis?filter[categoria][_eq]=residencial&sort=sort",
+              "host": ["http://localhost:8055"],
+              "path": ["items", "tipos_imoveis"],
+              "query": [
+                { "key": "filter[categoria][_eq]", "value": "residencial" },
+                { "key": "sort", "value": "sort" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Localizações",
+      "item": [
+        {
+          "name": "Listar todas",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8055/items/localizacoes?sort=sort",
+              "host": ["http://localhost:8055"],
+              "path": ["items", "localizacoes"],
+              "query": [
+                { "key": "sort", "value": "sort" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filtrar por região",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8055/items/localizacoes?filter[regiao][_eq]=belo-horizonte&sort=sort",
+              "host": ["http://localhost:8055"],
+              "path": ["items", "localizacoes"],
+              "query": [
+                { "key": "filter[regiao][_eq]", "value": "belo-horizonte" },
+                { "key": "sort", "value": "sort" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Files",
+      "item": [
+        {
+          "name": "Upload imagem",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:8055/files",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": "" },
+                { "key": "title", "value": "Foto do imóvel", "type": "text" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar arquivos",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8055/files"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Server",
+      "item": [
+        {
+          "name": "Ping",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": "http://localhost:8055/server/ping"
+          }
+        },
+        {
+          "name": "Info",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": "http://localhost:8055/server/info"
+          }
+        }
+      ]
+    }
+  ]
+}

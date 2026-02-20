@@ -1,0 +1,76 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<header class="w-full bg-verde-700 animate-slide-down">
+  <div class="mx-auto max-w-7xl px-5 md:px-6">
+    <!-- Mobile -->
+    <div class="flex items-center justify-between h-14 md:hidden">
+      <a href="/" class="text-lg font-light tracking-widest text-white uppercase">
+        Urbana<span class="font-bold">Boutique</span>
+      </a>
+      <div class="flex items-center gap-5">
+        <a href="tel:+5521999999999" aria-label="Ligar" class="text-white transition-transform duration-200 hover:scale-110 active:scale-95">
+          <Icon name="lucide:phone" class="size-5" />
+        </a>
+        <a href="https://wa.me/5521999999999" aria-label="WhatsApp" class="text-white transition-transform duration-200 hover:scale-110 active:scale-95">
+          <Icon name="simple-icons:whatsapp" class="size-5" />
+        </a>
+        <a href="mailto:contato@urbanaboutique.com.br" aria-label="Email" class="text-white transition-transform duration-200 hover:scale-110 active:scale-95">
+          <Icon name="lucide:mail" class="size-5" />
+        </a>
+      </div>
+    </div>
+
+    <!-- Desktop -->
+    <div class="hidden md:flex items-center justify-between h-20">
+      <a href="/" class="text-2xl font-light tracking-widest text-white uppercase transition-opacity duration-200 hover:opacity-80">
+        Urbana<span class="font-bold">Boutique</span>
+      </a>
+
+      <div class="flex items-center gap-10">
+        <a href="tel:+5521999999999" class="group flex items-center gap-2.5 text-white transition-transform duration-200 hover:-translate-y-0.5">
+          <Icon name="lucide:phone" class="size-5 transition-transform duration-200 group-hover:scale-110" />
+          <div>
+            <p class="text-xs text-white/70 leading-tight">Ligue agora</p>
+            <p class="text-sm font-medium leading-tight">(21) 99999-9999</p>
+          </div>
+        </a>
+
+        <a
+          href="https://wa.me/5521999999999"
+          class="group flex items-center gap-2.5 text-white transition-transform duration-200 hover:-translate-y-0.5"
+        >
+          <Icon name="simple-icons:whatsapp" class="size-5 transition-transform duration-200 group-hover:scale-110" />
+          <div>
+            <p class="text-xs text-white/70 leading-tight">Atendimento</p>
+            <p class="text-sm font-medium leading-tight">WhatsApp</p>
+          </div>
+        </a>
+
+        <a
+          href="mailto:contato@urbanaboutique.com.br"
+          class="group flex items-center gap-2.5 text-white transition-transform duration-200 hover:-translate-y-0.5"
+        >
+          <Icon name="lucide:mail" class="size-5 transition-transform duration-200 group-hover:scale-110" />
+          <div>
+            <p class="text-xs text-white/70 leading-tight">Atendimento</p>
+            <p class="text-sm font-medium leading-tight">Email</p>
+          </div>
+        </a>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <a href="#" aria-label="Facebook" class="text-white transition-transform duration-200 hover:scale-110 hover:-translate-y-0.5">
+          <Icon name="simple-icons:facebook" class="size-5" />
+        </a>
+        <a href="#" aria-label="Instagram" class="text-white transition-transform duration-200 hover:scale-110 hover:-translate-y-0.5">
+          <Icon name="simple-icons:instagram" class="size-5" />
+        </a>
+        <a href="#" aria-label="YouTube" class="text-white transition-transform duration-200 hover:scale-110 hover:-translate-y-0.5">
+          <Icon name="simple-icons:youtube" class="size-5" />
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
