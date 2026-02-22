@@ -221,8 +221,9 @@
       <label for="d-loc" class="mb-1.5 block text-xs font-medium text-verde-600">Localização</label>
       <select id="d-loc" class={selectClass} bind:value={filters.localizacao}>
         <option value="">Todas</option>
-        <optgroup label="Belo Horizonte">{#each locBH as l}<option value={l.slug}>{l.nome}</option>{/each}</optgroup>
-        <optgroup label="Grande BH">{#each locGrandeBH as l}<option value={l.slug}>{l.nome}</option>{/each}</optgroup>
+        {#each regioes() as [regiao, locs]}
+          <optgroup label={regiao}>{#each locs as l}<option value={l.slug}>{l.nome}</option>{/each}</optgroup>
+        {/each}
       </select>
     </div>
 
