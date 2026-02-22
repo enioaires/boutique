@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "..";
 
 @theme {
   --color-verde-50: oklch(97% 0.01 165.612);

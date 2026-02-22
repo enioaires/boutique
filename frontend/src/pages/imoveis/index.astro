@@ -1,0 +1,21 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.svelte";
+import ListaImoveis from "../../components/imoveis/ListaImoveis.svelte";
+import { directus, readItems } from "../../lib/directus";
+
+const [tiposImoveis, localizacoes] = await Promise.all([
+  directus.request(readItems("tipos_imoveis", { sort: ["sort"] })),
+  directus.request(readItems("localizacoes", { sort: ["sort"] })),
+]);
+---
+
+<Layout title="Imóveis | Urbana Boutique" description="Encontre o imóvel perfeito em Belo Horizonte e região.">
+  <Header client:load />
+  <main class="mx-auto max-w-7xl px-5 py-8 md:px-6 md:py-12">
+    <h1 class="mb-8 text-2xl font-light text-verde-900 md:text-3xl animate-fade-in-up">
+      Nossos <span class="font-semibold text-verde-500">Imóveis</span>
+    </h1>
+    <ListaImoveis client:load tiposImoveis={tiposImoveis} localizacoes={localizacoes} />
+  </main>
+</Layout>

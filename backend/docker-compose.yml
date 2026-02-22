@@ -35,6 +35,18 @@ services:
       DB_PASSWORD: ${POSTGRES_PASSWORD}
       ADMIN_EMAIL: ${ADMIN_EMAIL}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      CORS_ENABLED: "true"
+      CORS_ORIGIN: "true"
+      FLOWS_EXEC_ALLOWED_MODULES: ""
+      # Cloudflare R2 (desabilitado temporariamente - SSL handshake issue)
+      # STORAGE_LOCATIONS: "r2"
+      # STORAGE_R2_DRIVER: "s3"
+      # STORAGE_R2_KEY: "${STORAGE_R2_KEY}"
+      # STORAGE_R2_SECRET: "${STORAGE_R2_SECRET}"
+      # STORAGE_R2_BUCKET: "${STORAGE_R2_BUCKET}"
+      # STORAGE_R2_ENDPOINT: "https://${CF_ACCOUNT_ID}.r2.cloudflarestorage.com"
+      # STORAGE_R2_REGION: "auto"
+      # STORAGE_R2_FORCE_PATH_STYLE: "true"
     volumes:
       - ./data/uploads:/directus/uploads
       - ./data/extensions:/directus/extensions

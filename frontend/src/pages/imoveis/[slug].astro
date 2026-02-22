@@ -1,0 +1,292 @@
+---
+import { Icon } from "astro-icon/components";
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.svelte";
+import HeroCarousel from "../../components/imoveis/HeroCarousel.svelte";
+import GaleriaFotos from "../../components/imoveis/GaleriaFotos.svelte";
+import { directus, readItems, readSingleton } from "../../lib/directus";
+import type { ImovelPopulado } from "../../lib/types";
+
+export async function getStaticPaths() {
+  const imoveis = (await directus.request(
+    readItems("imoveis", {
+      fields: [
+        "*",
+        { tipo_imovel: ["*"], localizacao: ["*"], galeria: ["id", "directus_files_id", "sort"] },
+      ],
+    })
+  )) as ImovelPopulado[];
+
+  return imoveis.map((imovel) => ({
+    params: { slug: imovel.slug },
+    props: { imovel },
+  }));
+}
+
+const { imovel } = Astro.props;
+const DIRECTUS_URL = import.meta.env.PUBLIC_DIRECTUS_URL || "http://localhost:8055";
+
+let contato;
+try {
+  contato = await directus.request(readSingleton("dados_contato"));
+} catch {
+  contato = null;
+}
+
+// Build gallery image IDs sorted by sort field
+const galeriaImages = (imovel.galeria ?? [])
+  .sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))
+  .map((f) => f.directus_files_id);
+
+// Hero images: first 5 from gallery, or fallback to imagem_destaque
+const heroImages =
+  galeriaImages.length > 0
+    ? galeriaImages.slice(0, 5)
+    : imovel.imagem_destaque
+      ? [imovel.imagem_destaque]
+      : [];
+
+// Price formatting
+function formatPreco(valor: string | null): string {
+  if (!valor) return "Sob consulta";
+  return Number(valor).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+}
+
+const preco =
+  imovel.finalidade === "compra"
+    ? formatPreco(imovel.preco_venda)
+    : formatPreco(imovel.preco_aluguel);
+
+const whatsappMsg = encodeURIComponent(
+  `Olá! Tenho interesse no imóvel "${imovel.titulo}" (${imovel.codigo ?? imovel.slug}). Poderia me enviar mais informações?`
+);
+---
+
+<Layout
+  title={`${imovel.titulo} | Urbana Boutique`}
+  description={`${imovel.tipo_imovel.nome} em ${imovel.localizacao.nome} — ${preco}`}
+>
+  <Header client:load />
+
+  <main class="mx-auto max-w-7xl px-5 py-6 md:px-6 md:py-10">
+    <!-- Breadcrumb -->
+    <nav class="mb-6 text-xs text-verde-500" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-1.5 flex-wrap">
+        <li><a href="/" class="text-verde-400 hover:text-verde-600 transition-colors">Home</a></li>
+        <li class="text-verde-300">/</li>
+        <li><a href="/imoveis" class="text-verde-400 hover:text-verde-600 transition-colors">Imóveis</a></li>
+        <li class="text-verde-300">/</li>
+        <li class="text-verde-700 font-medium">{imovel.titulo}</li>
+      </ol>
+    </nav>
+
+    <!-- Hero Carousel -->
+    {heroImages.length > 1 ? (
+      <HeroCarousel
+        client:load
+        images={heroImages}
+        alt={imovel.titulo}
+        directusUrl={DIRECTUS_URL}
+      />
+    ) : heroImages.length === 1 ? (
+      <div class="overflow-hidden rounded-xl bg-verde-100">
+        <div class="aspect-2/1 md:aspect-[16/7]">
+          <img
+            src={`${DIRECTUS_URL}/assets/${heroImages[0]}?width=1400&height=700&fit=cover`}
+            alt={imovel.titulo}
+            class="size-full object-cover"
+          />
+        </div>
+      </div>
+    ) : (
+      <div class="flex aspect-2/1 md:aspect-[16/7] items-center justify-center rounded-xl bg-verde-100">
+        <Icon name="lucide:image" class="size-16 text-verde-200" />
+      </div>
+    )}
+
+    <!-- Content + Sidebar -->
+    <div class="mt-8 flex flex-col gap-8 lg:flex-row lg:gap-10">
+      <!-- Main content -->
+      <div class="flex-1 min-w-0">
+        <!-- Title + Code + Location -->
+        <div class="mb-6">
+          <div class="flex flex-wrap items-center gap-3 mb-2">
+            <h1 class="text-2xl font-semibold text-verde-900 md:text-3xl">{imovel.titulo}</h1>
+            {imovel.codigo && (
+              <span class="rounded-full bg-verde-100 px-3 py-0.5 text-xs font-medium text-verde-600">
+                {imovel.codigo}
+              </span>
+            )}
+          </div>
+          <p class="flex items-center gap-1.5 text-sm text-verde-600">
+            <Icon name="lucide:map-pin" class="size-4" />
+            {imovel.localizacao.nome}
+          </p>
+        </div>
+
+        <!-- Highlights row -->
+        <div class="flex flex-wrap gap-4 rounded-xl bg-verde-50 p-4 md:gap-6 md:p-5">
+          <div class="flex items-center gap-2 text-verde-700">
+            <Icon name="lucide:building-2" class="size-5 text-verde-500" />
+            <span class="text-sm">{imovel.tipo_imovel.nome}</span>
+          </div>
+          {imovel.quartos && (
+            <div class="flex items-center gap-2 text-verde-700">
+              <Icon name="lucide:bed-double" class="size-5 text-verde-500" />
+              <span class="text-sm">
+                {imovel.quartos} {imovel.quartos === 1 ? "quarto" : "quartos"}
+                {imovel.suites ? ` (${imovel.suites} ${imovel.suites === 1 ? "suíte" : "suítes"})` : ""}
+              </span>
+            </div>
+          )}
+          {imovel.banheiros && (
+            <div class="flex items-center gap-2 text-verde-700">
+              <Icon name="lucide:bath" class="size-5 text-verde-500" />
+              <span class="text-sm">{imovel.banheiros} {imovel.banheiros === 1 ? "banheiro" : "banheiros"}</span>
+            </div>
+          )}
+          {imovel.area_total && (
+            <div class="flex items-center gap-2 text-verde-700">
+              <Icon name="lucide:maximize" class="size-5 text-verde-500" />
+              <span class="text-sm">{imovel.area_total}m² total</span>
+            </div>
+          )}
+          {imovel.area_util && (
+            <div class="flex items-center gap-2 text-verde-700">
+              <Icon name="lucide:scan" class="size-5 text-verde-500" />
+              <span class="text-sm">{imovel.area_util}m² útil</span>
+            </div>
+          )}
+          {imovel.vagas && (
+            <div class="flex items-center gap-2 text-verde-700">
+              <Icon name="lucide:car" class="size-5 text-verde-500" />
+              <span class="text-sm">{imovel.vagas} {imovel.vagas === 1 ? "vaga" : "vagas"}</span>
+            </div>
+          )}
+          {imovel.andar && (
+            <div class="flex items-center gap-2 text-verde-700">
+              <Icon name="lucide:layers" class="size-5 text-verde-500" />
+              <span class="text-sm">{imovel.andar}&#186; andar</span>
+            </div>
+          )}
+        </div>
+
+        <!-- Description -->
+        {imovel.descricao && (
+          <div class="mt-8">
+            <h2 class="mb-4 text-xl font-light text-verde-900 md:text-2xl">
+              Sobre o <span class="font-semibold text-verde-500">Imóvel</span>
+            </h2>
+            <div class="prose prose-verde max-w-none text-verde-700 text-sm leading-relaxed [&>p]:mb-4" set:html={imovel.descricao} />
+          </div>
+        )}
+
+        <!-- Amenities -->
+        {imovel.caracteristicas && imovel.caracteristicas.length > 0 && (
+          <div class="mt-8">
+            <h2 class="mb-4 text-xl font-light text-verde-900 md:text-2xl">
+              <span class="font-semibold text-verde-500">Comodidades</span>
+            </h2>
+            <div class="flex flex-wrap gap-2">
+              {imovel.caracteristicas.map((c) => (
+                <span class="rounded-full border border-verde-200 bg-verde-50 px-3.5 py-1.5 text-sm text-verde-700">
+                  {c}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- Address -->
+        {imovel.endereco && (
+          <div class="mt-8">
+            <h2 class="mb-4 text-xl font-light text-verde-900 md:text-2xl">
+              <span class="font-semibold text-verde-500">Localização</span>
+            </h2>
+            <div class="flex items-start gap-2 text-sm text-verde-700">
+              <Icon name="lucide:map-pin" class="mt-0.5 size-4 shrink-0 text-verde-500" />
+              <p>{imovel.endereco}</p>
+            </div>
+          </div>
+        )}
+
+        <!-- Photo Gallery -->
+        {galeriaImages.length > 0 && (
+          <div class="mt-10">
+            <GaleriaFotos
+              client:visible
+              images={galeriaImages}
+              alt={imovel.titulo}
+              directusUrl={DIRECTUS_URL}
+            />
+          </div>
+        )}
+      </div>
+
+      <!-- Sidebar — Price Card -->
+      <aside class="lg:w-80 lg:shrink-0">
+        <div class="rounded-xl border border-verde-100 bg-white p-6 shadow-sm lg:sticky lg:top-8">
+          <!-- Finalidade badge -->
+          <span class="inline-block rounded-full bg-verde-500 px-3 py-0.5 text-xs font-medium text-white mb-3">
+            {imovel.finalidade === "compra" ? "Venda" : "Aluguel"}
+          </span>
+
+          <!-- Price -->
+          <p class="text-2xl font-bold text-verde-900 md:text-3xl">
+            {preco}
+            {imovel.finalidade === "aluguel" && (
+              <span class="text-sm font-normal text-verde-500">/mês</span>
+            )}
+          </p>
+
+          <!-- Condominio / IPTU -->
+          {(imovel.condominio || imovel.iptu) && (
+            <div class="mt-3 space-y-1 border-t border-verde-100 pt-3">
+              {imovel.condominio && (
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-verde-500">Condomínio</span>
+                  <span class="font-medium text-verde-800">{formatPreco(imovel.condominio)}</span>
+                </div>
+              )}
+              {imovel.iptu && (
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-verde-500">IPTU</span>
+                  <span class="font-medium text-verde-800">{formatPreco(imovel.iptu)}</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          <!-- WhatsApp CTA -->
+          {contato?.whatsapp && (
+            <a
+              href={`https://wa.me/${contato.whatsapp}?text=${whatsappMsg}`}
+              target="_blank"
+              rel="noopener"
+              class="mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-verde-500 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-verde-600 hover:shadow-lg hover:shadow-verde-500/25"
+            >
+              <Icon name="simple-icons:whatsapp" class="size-5" />
+              Falar no WhatsApp
+            </a>
+          )}
+
+          <!-- Phone -->
+          {contato?.telefone && (
+            <a
+              href={`tel:+${contato.telefone_raw}`}
+              class="mt-2 flex w-full items-center justify-center gap-2 rounded-lg border border-verde-200 px-6 py-3 text-sm font-medium text-verde-700 transition-all hover:border-verde-400 hover:text-verde-900"
+            >
+              <Icon name="lucide:phone" class="size-4" />
+              {contato.telefone}
+            </a>
+          )}
+        </div>
+      </aside>
+    </div>
+  </main>
+</Layout>

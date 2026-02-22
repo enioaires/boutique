@@ -5,9 +5,10 @@
   interface Props {
     tiposImoveis: TipoImovel[];
     localizacoes: Localizacao[];
+    heroImage?: string | null;
   }
 
-  let { tiposImoveis, localizacoes }: Props = $props();
+  let { tiposImoveis, localizacoes, heroImage }: Props = $props();
 
   let mode = $state<"search" | "code">("search");
 
@@ -130,7 +131,7 @@
               id="codigo"
               name="codigo"
               type="text"
-              placeholder="Ex.: UB123456"
+              placeholder="Ex.: IMV-0001"
               class="w-full rounded-md border border-verde-200 bg-white px-4 py-3 text-sm text-verde-900 placeholder:text-verde-300 outline-none transition-all duration-200 focus:border-verde-500 focus:ring-2 focus:ring-verde-500/20 hover:border-verde-300"
             />
           </div>
@@ -163,13 +164,21 @@
       {/if}
     </div>
 
-    <!-- Imagem placeholder -->
+    <!-- Imagem hero -->
     <div class="hidden md:block">
-      <div
-        class="aspect-4/3 rounded-lg bg-verde-100 flex items-center justify-center animate-fade-in-up [animation-delay:300ms]"
-      >
-        <p class="text-verde-300 text-sm">Imagem</p>
-      </div>
+      {#if heroImage}
+        <img
+          src={heroImage}
+          alt="Urbana Boutique"
+          class="aspect-4/3 w-full rounded-lg object-cover animate-fade-in-up [animation-delay:300ms]"
+        />
+      {:else}
+        <div
+          class="aspect-4/3 rounded-lg bg-verde-100 flex items-center justify-center animate-fade-in-up [animation-delay:300ms]"
+        >
+          <p class="text-verde-300 text-sm">Imagem</p>
+        </div>
+      {/if}
     </div>
   </div>
 </section>

@@ -1,18 +1,32 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Header from "../components/Header.astro";
+import Header from "../components/Header.svelte";
 import HeroSearch from "../components/HeroSearch.svelte";
 import OpportunitiesCarousel from "../components/OpportunitiesCarousel.astro";
-import { directus, readItems } from "../lib/directus";
+import ImoveisDestaque from "../components/ImoveisDestaque.svelte";
+import { directus, readItems, readSingleton } from "../lib/directus";
+import type { ImovelPopulado } from "../lib/types";
 
-const [tiposImoveis, localizacoes] = await Promise.all([
+const [tiposImoveis, localizacoes, imoveisDestaque, dadosGerais] = await Promise.all([
   directus.request(readItems("tipos_imoveis", { sort: ["sort"] })),
   directus.request(readItems("localizacoes", { sort: ["sort"] })),
+  directus.request(readItems("imoveis", {
+    fields: ["*", { tipo_imovel: ["*"], localizacao: ["*"] }],
+    filter: { destaque: { _eq: true }, status: { _eq: "disponivel" } },
+    sort: ["-date_created"],
+  })) as Promise<ImovelPopulado[]>,
+  directus.request(readSingleton("dados_gerais")).catch(() => null),
 ]);
+
+const DIRECTUS_URL = import.meta.env.PUBLIC_DIRECTUS_URL || "http://localhost:8055";
+const heroImage = dadosGerais?.imagem_hero
+  ? `${DIRECTUS_URL}/assets/${dadosGerais.imagem_hero}?width=800&height=600&fit=cover`
+  : null;
 ---
 
 <Layout>
-  <Header />
-  <HeroSearch client:load tiposImoveis={tiposImoveis} localizacoes={localizacoes} />
+  <Header client:load />
+  <HeroSearch client:load tiposImoveis={tiposImoveis} localizacoes={localizacoes} heroImage={heroImage} />
   <OpportunitiesCarousel />
+  <ImoveisDestaque client:load imoveis={imoveisDestaque} />
 </Layout>

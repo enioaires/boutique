@@ -1,0 +1,5 @@
+procs:
+  dev:
+    shell: bash dev.sh
+  directus-logs:
+    shell: docker compose -f backend/docker-compose.yml logs -f directus

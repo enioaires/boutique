@@ -1,0 +1,116 @@
+---
+import { Icon } from "astro-icon/components";
+import { directus, readSingleton } from "../lib/directus";
+
+let contato;
+try {
+  contato = await directus.request(readSingleton("dados_contato"));
+} catch {
+  contato = null;
+}
+---
+
+<footer class="bg-verde-900 text-verde-100">
+  <!-- Colunas principais -->
+  <div class="mx-auto max-w-7xl px-5 md:px-6 pt-14 pb-10">
+    <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5">
+      <!-- Escritório -->
+      <div class="lg:col-span-1">
+        <h4 class="text-xs font-bold tracking-widest uppercase text-white mb-4">Escritório</h4>
+        <p class="text-sm leading-relaxed text-verde-300">
+          Rua Fernandes Tourinho, 147 — Sala 802<br />
+          Savassi, Belo Horizonte — MG<br />
+          CEP 30112-000
+        </p>
+      </div>
+
+      <!-- Imóveis -->
+      <div>
+        <h4 class="text-xs font-bold tracking-widest uppercase text-white mb-4">Imóveis</h4>
+        <ul class="space-y-2.5">
+          <li><a href="/imoveis?finalidade=compra" class="text-sm text-verde-300 transition-colors hover:text-white">Comprar</a></li>
+          <li><a href="/imoveis?finalidade=aluguel" class="text-sm text-verde-300 transition-colors hover:text-white">Alugar</a></li>
+          <li><a href="/lancamentos" class="text-sm text-verde-300 transition-colors hover:text-white">Lançamentos</a></li>
+          <li><a href="/imoveis" class="text-sm text-verde-300 transition-colors hover:text-white">Ver todos</a></li>
+        </ul>
+      </div>
+
+      <!-- Regiões -->
+      <div>
+        <h4 class="text-xs font-bold tracking-widest uppercase text-white mb-4">Regiões</h4>
+        <ul class="space-y-2.5">
+          <li><a href="/imoveis?regiao=savassi" class="text-sm text-verde-300 transition-colors hover:text-white">Savassi</a></li>
+          <li><a href="/imoveis?regiao=lourdes" class="text-sm text-verde-300 transition-colors hover:text-white">Lourdes</a></li>
+          <li><a href="/imoveis?regiao=funcionarios" class="text-sm text-verde-300 transition-colors hover:text-white">Funcionários</a></li>
+          <li><a href="/imoveis?regiao=sion" class="text-sm text-verde-300 transition-colors hover:text-white">Sion</a></li>
+          <li><a href="/imoveis?regiao=nova-lima" class="text-sm text-verde-300 transition-colors hover:text-white">Nova Lima</a></li>
+        </ul>
+      </div>
+
+      <!-- Institucional -->
+      <div>
+        <h4 class="text-xs font-bold tracking-widest uppercase text-white mb-4">Institucional</h4>
+        <ul class="space-y-2.5">
+          <li><a href="/sobre" class="text-sm text-verde-300 transition-colors hover:text-white">Sobre nós</a></li>
+          <li><a href="/anuncie" class="text-sm text-verde-300 transition-colors hover:text-white">Anuncie conosco</a></li>
+          <li><a href="/blog" class="text-sm text-verde-300 transition-colors hover:text-white">Blog</a></li>
+          <li><a href="/contato" class="text-sm text-verde-300 transition-colors hover:text-white">Contato</a></li>
+        </ul>
+      </div>
+
+      <!-- Redes sociais -->
+      <div class="sm:col-span-2 lg:col-span-1">
+        <h4 class="text-xs font-bold tracking-widest uppercase text-white mb-4">Siga-nos</h4>
+        <div class="flex items-center gap-3">
+          {contato?.instagram_url && (
+            <a
+              href={contato.instagram_url}
+              target="_blank"
+              rel="noopener"
+              aria-label="Instagram"
+              class="flex items-center justify-center size-10 rounded-full bg-verde-700 text-verde-200 transition-colors hover:bg-verde-500 hover:text-white"
+            >
+              <Icon name="simple-icons:instagram" class="size-5" />
+            </a>
+          )}
+          {contato?.facebook_url && (
+            <a
+              href={contato.facebook_url}
+              target="_blank"
+              rel="noopener"
+              aria-label="Facebook"
+              class="flex items-center justify-center size-10 rounded-full bg-verde-700 text-verde-200 transition-colors hover:bg-verde-500 hover:text-white"
+            >
+              <Icon name="simple-icons:facebook" class="size-5" />
+            </a>
+          )}
+          {contato?.youtube_url && (
+            <a
+              href={contato.youtube_url}
+              target="_blank"
+              rel="noopener"
+              aria-label="YouTube"
+              class="flex items-center justify-center size-10 rounded-full bg-verde-700 text-verde-200 transition-colors hover:bg-verde-500 hover:text-white"
+            >
+              <Icon name="simple-icons:youtube" class="size-5" />
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Barra inferior -->
+  <div class="border-t border-verde-800">
+    <div class="mx-auto max-w-7xl px-5 md:px-6 py-5">
+      <div class="flex flex-col items-center gap-3 text-xs text-verde-400 md:flex-row md:justify-between">
+        <p>&copy; {new Date().getFullYear()} Urbana Boutique. Todos os direitos reservados.</p>
+        <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-1">
+          <span>CRECI-MG J-00000</span>
+          <a href="/politica-de-privacidade" class="transition-colors hover:text-white">Privacidade</a>
+          <a href="/termos" class="transition-colors hover:text-white">Termos de uso</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
