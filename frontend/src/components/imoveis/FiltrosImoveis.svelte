@@ -18,8 +18,15 @@
 
   const tiposResidencial = $derived(tiposImoveis.filter((t) => t.categoria === "residencial"));
   const tiposComercial = $derived(tiposImoveis.filter((t) => t.categoria === "comercial"));
-  const locBH = $derived(localizacoes.filter((l) => l.regiao === "belo-horizonte"));
-  const locGrandeBH = $derived(localizacoes.filter((l) => l.regiao === "grande-bh"));
+  const regioes = $derived(() => {
+    const map = new Map<string, Localizacao[]>();
+    for (const loc of localizacoes) {
+      const regiao = loc.regiao || "Outros";
+      if (!map.has(regiao)) map.set(regiao, []);
+      map.get(regiao)!.push(loc);
+    }
+    return [...map.entries()];
+  });
 
   const precoDisabled = $derived(filters.finalidade === null);
   const precoMax = $derived(filters.finalidade === "aluguel" ? 20000 : 10000000);
@@ -140,8 +147,9 @@
             <label for="m-loc" class="mb-1.5 block text-xs font-medium text-verde-600">Localização</label>
             <select id="m-loc" class={selectClass} bind:value={filters.localizacao}>
               <option value="">Todas</option>
-              <optgroup label="Belo Horizonte">{#each locBH as l}<option value={l.slug}>{l.nome}</option>{/each}</optgroup>
-              <optgroup label="Grande BH">{#each locGrandeBH as l}<option value={l.slug}>{l.nome}</option>{/each}</optgroup>
+              {#each regioes() as [regiao, locs]}
+                <optgroup label={regiao}>{#each locs as l}<option value={l.slug}>{l.nome}</option>{/each}</optgroup>
+              {/each}
             </select>
           </div>
         </div>

@@ -10,7 +10,7 @@ export interface Localizacao {
   id: number;
   nome: string;
   slug: string;
-  regiao: "belo-horizonte" | "grande-bh";
+  regiao: string;
   sort: number;
 }
 

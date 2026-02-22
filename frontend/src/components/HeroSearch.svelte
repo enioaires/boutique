@@ -14,8 +14,15 @@
 
   const tiposResidencial = $derived(tiposImoveis.filter((t) => t.categoria === "residencial"));
   const tiposComercial = $derived(tiposImoveis.filter((t) => t.categoria === "comercial"));
-  const locBH = $derived(localizacoes.filter((l) => l.regiao === "belo-horizonte"));
-  const locGrandeBH = $derived(localizacoes.filter((l) => l.regiao === "grande-bh"));
+  const regioes = $derived(() => {
+    const map = new Map<string, Localizacao[]>();
+    for (const loc of localizacoes) {
+      const regiao = loc.regiao || "Outros";
+      if (!map.has(regiao)) map.set(regiao, []);
+      map.get(regiao)!.push(loc);
+    }
+    return [...map.entries()];
+  });
 </script>
 
 <section class="bg-verde-50">
@@ -77,16 +84,13 @@
               class="w-full rounded-md border border-verde-200 bg-white px-4 py-3 text-sm text-verde-900 outline-none transition-all duration-200 focus:border-verde-500 focus:ring-2 focus:ring-verde-500/20 hover:border-verde-300"
             >
               <option value="" disabled selected>Localidades</option>
-              <optgroup label="Belo Horizonte">
-                {#each locBH as loc}
-                  <option value={loc.slug}>{loc.nome}</option>
-                {/each}
-              </optgroup>
-              <optgroup label="Grande BH">
-                {#each locGrandeBH as loc}
-                  <option value={loc.slug}>{loc.nome}</option>
-                {/each}
-              </optgroup>
+              {#each regioes() as [regiao, locs]}
+                <optgroup label={regiao}>
+                  {#each locs as loc}
+                    <option value={loc.slug}>{loc.nome}</option>
+                  {/each}
+                </optgroup>
+              {/each}
             </select>
           </div>
 
