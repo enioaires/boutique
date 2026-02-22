@@ -1,15 +1,15 @@
 ---
-const categories = [
-  { label: "Apartamentos", slug: "apartamento" },
-  { label: "Casas", slug: "casa" },
-  { label: "Coberturas", slug: "cobertura" },
-  { label: "Salas Comerciais", slug: "sala-comercial" },
-  { label: "Lotes e Terrenos", slug: "lote" },
-  { label: "Lançamentos", slug: "lancamento" },
-];
+import type { TipoImovel } from "../lib/types";
+
+interface Props {
+  tiposImoveis: TipoImovel[];
+}
+
+const { tiposImoveis } = Astro.props;
+const DIRECTUS_URL = import.meta.env.PUBLIC_DIRECTUS_URL || "http://localhost:8055";
 
 // Duplica para o loop infinito ser seamless
-const slides = [...categories, ...categories];
+const slides = [...tiposImoveis, ...tiposImoveis];
 ---
 
 <section class="bg-white py-10 md:py-16 overflow-hidden">
@@ -27,16 +27,25 @@ const slides = [...categories, ...categories];
     <!-- Track -->
     <div class="group">
       <div class="flex w-max animate-marquee group-hover:[animation-play-state:paused]">
-        {slides.map((category) => (
+        {slides.map((tipo) => (
           <a
-            href={`/imoveis?tipo=${category.slug}`}
+            href={`/imoveis?tipo=${tipo.slug}`}
             class="w-52 shrink-0 px-3 sm:w-60 md:w-72 md:px-4"
           >
             <div class="aspect-[4/3] rounded-lg bg-verde-100 overflow-hidden flex items-center justify-center transition-transform duration-300 hover:scale-[1.03]">
-              <span class="text-verde-300 text-sm">{category.label}</span>
+              {tipo.imagem ? (
+                <img
+                  src={`${DIRECTUS_URL}/assets/${tipo.imagem}?width=400&height=300&fit=cover`}
+                  alt={tipo.nome}
+                  class="size-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <span class="text-verde-300 text-sm">{tipo.nome}</span>
+              )}
             </div>
             <p class="mt-3 text-center text-sm font-medium text-verde-800 transition-colors duration-200 hover:text-verde-500">
-              {category.label}
+              {tipo.nome}
             </p>
           </a>
         ))}

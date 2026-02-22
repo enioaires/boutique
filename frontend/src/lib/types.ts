@@ -3,6 +3,7 @@ export interface TipoImovel {
   nome: string;
   slug: string;
   categoria: "residencial" | "comercial";
+  imagem: string | null;
   sort: number;
 }
 

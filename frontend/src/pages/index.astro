@@ -27,6 +27,6 @@ const heroImage = dadosGerais?.imagem_hero
 <Layout>
   <Header client:load />
   <HeroSearch client:load tiposImoveis={tiposImoveis} localizacoes={localizacoes} heroImage={heroImage} />
-  <OpportunitiesCarousel />
+  <OpportunitiesCarousel tiposImoveis={tiposImoveis} />
   <ImoveisDestaque client:load imoveis={imoveisDestaque} />
 </Layout>
